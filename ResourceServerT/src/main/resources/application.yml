@@ -2,11 +2,19 @@ server:
   port: 4040
 
 ####### resource server configuration properties
+#spring:
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:9000
+#          issuer-uri: http://localhost:8080/realms/myrealm
 spring:
   security:
     oauth2:
       resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9000
-#          issuer-uri: http://localhost:8080/realms/myrealm
+        opaquetoken:
+          introspection-uri: http://localhost:9000/oauth2/introspect
+          client-id: app-client
+          client-secret: secret
 
