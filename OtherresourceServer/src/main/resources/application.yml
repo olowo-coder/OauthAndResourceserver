@@ -1,0 +1,19 @@
+server:
+  port: 4050
+
+####### resource server configuration properties
+#spring:
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:9000
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: http://localhost:9000/oauth2/introspect
+          client-id: app-client
+          client-secret: secret
