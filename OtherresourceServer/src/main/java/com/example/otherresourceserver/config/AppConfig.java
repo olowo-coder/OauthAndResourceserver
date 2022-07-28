@@ -25,27 +25,28 @@ public class AppConfig {
 //    @Value("${oauth2.client-secret}")
 //    private String clientSecret;
 
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
-    String introspectionUri;
-
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-id}")
-    String clientId;
-
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-secret}")
-    String clientSecret;
+//    @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
+//    String introspectionUri;
+//
+//    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-id}")
+//    String clientId;
+//
+//    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-secret}")
+//    String clientSecret;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(auths -> auths
                         .antMatchers(HttpMethod.GET, "/data")
                         .authenticated())
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .opaqueToken(opaqueToken -> opaqueToken
+                                .introspectionUri("http://localhost:9000/oauth2/introspect")
+                                .introspectionClientCredentials("app-client", "test")
+                        )
+                );
+//                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }
-
-//    @Bean
-//    public JwtDecoder jwtDecoder() {
-//        return JwtDecoders.fromIssuerLocation("http://localhost:9000");
-//    }
 
 }

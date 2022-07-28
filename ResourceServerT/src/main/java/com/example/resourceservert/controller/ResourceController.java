@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/resource")
+@RequestMapping(value = "/resource")
 public class ResourceController {
 
-    @GetMapping
+    @GetMapping(name  = "from-resourse")
     public ResponseEntity<?> accessData(){
         return ResponseEntity.ok(ResponseDTO.builder().data("Successful").build());
     }

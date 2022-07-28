@@ -32,7 +32,8 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(auths -> auths
-                        .antMatchers(HttpMethod.GET, "/resource").authenticated())
+                        .antMatchers(HttpMethod.GET, "/resource").hasAuthority("SCOPE_lion.read").anyRequest()
+                        .authenticated())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }

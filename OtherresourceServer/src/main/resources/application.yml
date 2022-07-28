@@ -7,13 +7,14 @@ server:
 #    oauth2:
 #      resourceserver:
 #        jwt:
-#          issuer-uri: http://localhost:9000
+##          issuer-uri: http://localhost:9000
+#          issuer-uri: http://localhost:8080/realms/myrealm
 
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        opaque-token:
-          introspection-uri: http://localhost:9000/oauth2/introspect
-          client-id: app-client
-          client-secret: secret
+#spring:
+#  security:
+#    oauth2:
+#      resourceserver:
+#        opaque-token:
+#          introspection-uri: http://localhost:9000/oauth2/introspect
+#          client-id: app-client
+#          client-secret: secret
