@@ -6,10 +6,13 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.core.userdetails.User;
@@ -21,7 +24,12 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
@@ -57,7 +65,8 @@ public class OAuth2Config {
         http.authorizeRequests(authorizeRequests ->
                         authorizeRequests.anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin().loginPage("/login")
+                .permitAll();
         return http.build();
     }
 
@@ -72,6 +81,35 @@ public class OAuth2Config {
         return new InMemoryUserDetailsManager(user);
     }
 
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//            .withUser("rest")
+//            .password("rest")
+//            .roles("REST")
+//            .and()
+//            .withUser("historian")
+//            .password("historian")
+//            .roles("HIS");
+//    }
+//
+//
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
+
+//    @Autowired
+//    private JdbcTemplate jdbcTemplate;
+//    @Bean
+//    public OAuth2AuthorizationService oAuth2AuthorizationService() {
+//        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository());
+//    }
+//
+//    @Bean
+//    public OAuth2AuthorizationConsentService oAuth2AuthorizationConsentService() {
+//        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository());
+//    }
+
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -84,10 +122,16 @@ public class OAuth2Config {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/api-client-oidc")
-                .redirectUri("http://127.0.0.1:8080/authorized")
+//                .redirectUri("http://127.0.0.1:8080/authorized")
                 .scope(OidcScopes.OPENID)
                 .scope("read")
                 .scope("write")
+                .scope("best")
+                .scope("sing")
+                .scope("dance")
+                .scope("go")
+                .scope("move")
+                .scope("see")
                 .tokenSettings(TokenSettings.builder()
                         .accessTokenTimeToLive(Duration.ofMinutes(10L))
                         .build())
@@ -114,7 +158,27 @@ public class OAuth2Config {
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
 
-        return new InMemoryRegisteredClientRepository(registeredClient, registeredClient2);
+        RegisteredClient registeredClient3 = RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("web_app")
+            .clientSecret("{noop}web_app")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+            .authorizationGrantType(AuthorizationGrantType.PASSWORD)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+            .redirectUri("http://127.0.0.1:8080/login/oauth2/code/api-client-oidc")
+            .redirectUri("http://127.0.0.1:8080/authorized")
+            .scope(OidcScopes.OPENID)
+            .scope("read")
+            .scope("profile")
+            .tokenSettings(TokenSettings.builder()
+                .accessTokenTimeToLive(Duration.ofMinutes(10L))
+                .build())
+            .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+            .build();
+        return new InMemoryRegisteredClientRepository(registeredClient, registeredClient2, registeredClient3);
+//        return new JdbcRegisteredClientRepository();
     }
 
     @Bean

@@ -8,9 +8,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="OtherresourceServer" />
-        <module name="AuthorizationServerT" />
-        <module name="OathTest" />
         <module name="ResourceServerT" />
+        <module name="AuthorizationServerT" />
+      </profile>
+      <profile name="Annotation profile for OathTest" enabled="true">
+        <sourceOutputDir name="../../../target/generated-sources/annotations" />
+        <sourceTestOutputDir name="../../../target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="OathTest" />
       </profile>
     </annotationProcessing>
   </component>
